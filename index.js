@@ -61,7 +61,7 @@ async function run(){
 
                 const id = req.params.id;
                 const query = {_id:ObjectId(id)}
-                const car = await carCollection.find(query).toArray()
+                const car = await carCollection.find(query)
                 if(query === '6382b63c3a4c3911b8b9c4e6'){
                     res.send(car)
                 }
