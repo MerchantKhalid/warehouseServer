@@ -60,11 +60,9 @@ async function run(){
 
 
                 const id = req.params.id;
-                const query = {_id:ObjectId(category_id)}
+                const query = {}
                 const car = await carCollection.find(query).toArray()
-                const selectedCategory=car.filter(c=>c.category_id===id);
-                res.send(selectedCategory)
-                // res.send(car)
+                res.send(car)
                    
                  })
 
