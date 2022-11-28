@@ -61,8 +61,8 @@ async function run(){
 
                 const id = req.params.id;
                 const query = {_id:ObjectId(id)}
-                const car = await carCollection.findOne(query)
-                  // const selectedCar= car.find(p=>p._id===id);
+                const car = await carCollection.find(query).toArray()
+                  const selectedCar= car.filter(p=>p.category_id===id);
                 res.send(car)
                    
                  })
