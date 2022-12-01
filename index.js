@@ -34,13 +34,10 @@ function verifyJWT(req,res,next){
 async function run(){
     try{
         const categoryCollection = client.db('milestone12').collection('carcollection')
-
         const allCategoryCollection = client.db('milestone12').collection('category')
         const carCollection = client.db('milestone12').collection('allcar')
         const userBooking = client.db('milestone12').collection('userbooking')
         const usersCollection = client.db('milestone12').collection('users')
-
-
 
         app.get('/car-category',async(req,res)=>{
             const query = {}
@@ -50,45 +47,35 @@ async function run(){
 
 
         // all-car-category
-        
-
             app.get('/allcategories/:id',async(req,res)=>{
-                //   const id = req.params.id;
-                //   const query = {}
-                //   const car = await carCollection.find(query).toArray()
-                //   res.send(car)
-
-
                 const id = req.params.id;
                 const query={}
                 const car = await carCollection.find(query).toArray()
                 const selectedCategory=car.filter(c=>c.categoryid===id);
-                // const car = await carCollection.find(query).toArray()
-                res.send(selectedCategory)
-                   
+                res.send(selectedCategory)  
                  })
 
-                 //single car details
+              //single car details
               app.get('/alldata/:id',async(req,res)=>{
-                          const id = req.params.id;
-                          const query = {_id:ObjectId(id)}
-                          const car = await carCollection.findOne(query)
-                            // const selectedCar= car.find(p=>p._id===id);
-                          res.send(car)
-                    
+                 const id = req.params.id;
+                 const query = {_id:ObjectId(id)}
+                 const car = await carCollection.findOne(query)
+                res.send(car)   
                  })
-            
-
-            
-           
+             
         // booked an Appointment
         app.post('/booking',async(req,res)=>{
             const booking = req.body
             console.log(booking)
             const query = {
-                model:booking.model
+                model:booking.model,
+                email:booking.email
             }
             const alreadybooked = await userBooking.find(query).toArray()
+            if(alreadybooked.length){
+                const message= `You already have an appointment for ${booking.model}`
+                return res.send({acknowledged:false,message})
+            }
                 const result = await userBooking.insertOne(booking)
                 res.send(result)
             
@@ -116,7 +103,7 @@ async function run(){
                 res.send({accessToken:token})
             }
             
-            res.status(403).send({accessToken:''})
+            // res.status(403).send({accessToken:''})
         })
 
         // users
