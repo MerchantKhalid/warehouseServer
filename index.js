@@ -60,9 +60,11 @@ async function run(){
 
 
                 const id = req.params.id;
-                const query = {}
+                const query={}
                 const car = await carCollection.find(query).toArray()
-                res.send(car)
+                const selectedCategory=car.filter(c=>c.categoryid===id);
+                // const car = await carCollection.find(query).toArray()
+                res.send(selectedCategory)
                    
                  })
 
@@ -78,7 +80,6 @@ async function run(){
             
 
             
-
            
         // booked an Appointment
         app.post('/booking',async(req,res)=>{
@@ -88,12 +89,9 @@ async function run(){
                 model:booking.model
             }
             const alreadybooked = await userBooking.find(query).toArray()
-            if(alreadybooked.length){
-                const message = `You Already Booked this Appointmentn of ${booking.model}`
-                return res.send({acknowledged:false,message})
-            }
-            const result = await userBooking.insertOne(booking)
-            res.send(result)
+                const result = await userBooking.insertOne(booking)
+                res.send(result)
+            
         })
 
         // Booking
