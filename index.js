@@ -38,10 +38,11 @@ async function run(){
         const carCollection = client.db('milestone12').collection('allcar')
         const userBooking = client.db('milestone12').collection('userbooking')
         const usersCollection = client.db('milestone12').collection('users')
+        const addedCollection = client.db('milestone12').collection('addedProduct')
 
         app.get('/car-category',async(req,res)=>{
             const query = {}
-            const categories = await allCategoryCollection.find(query).toArray()
+            const categories =await allCategoryCollection.find(query).toArray()
             res.send(categories)
         })
 
@@ -50,9 +51,14 @@ async function run(){
             app.get('/allcategories/:id',async(req,res)=>{
                 const id = req.params.id;
                 const query={}
-                const car = await carCollection.find(query).toArray()
+                const car =await carCollection.find(query).toArray()
+                if(id=== '08'){
+                    res.send(car)
+                }else{    
                 const selectedCategory=car.filter(c=>c.categoryid===id);
-                res.send(selectedCategory)  
+                res.send(selectedCategory) 
+                }
+                 
                  })
 
               //single car details
@@ -84,13 +90,15 @@ async function run(){
         // Booking
         app.get('/bookings',async(req,res)=>{
             const email=req.query.email
-            // const decodedEmail= req.decoded.email
+            //  const decodedEmail= req.decoded.email
             // if(email !== decodedEmail){
             //     return res.status(403).send({message:'Forbidden Access'})
             // }
-            const query = {email:email}
-            const bookings = await userBooking.find(query).toArray()
-            res.send(bookings)
+                const query = {email:email}
+                const bookings = await userBooking.find(query).toArray()
+                res.send(bookings)
+            
+            
         })
 
         //jwt
@@ -99,11 +107,12 @@ async function run(){
             const query = {email:email}
             const user = await usersCollection.findOne(query)
             if(user){
-                const token = jwt.sign({email},process.env.ACCESS_TOKEN)
-                res.send({accessToken:token})
+                const token = jwt.sign({email},process.env.ACCESS_TOKEN,{expiresIn:'20d'})
+               return res.send({accessToken:token})
+            }else{
+                return res.status(403).send({accessToken:''})
             }
             
-            // res.status(403).send({accessToken:''})
         })
 
         // users
@@ -111,6 +120,21 @@ async function run(){
             const users = req.body
             const result = await usersCollection.insertOne(users)
             res.send(result)
+        })
+
+        //add product
+        app.post('/addproduct',async(req,res)=>{
+            const addedProduct = req.body;
+            const result= await addedCollection.insertOne(addedProduct)
+            res.send(result)
+        })
+
+        //get added product
+        app.get('/addedproduct',async(req,res)=>{
+            const email=req.query.email
+            const query = {email:email}
+            const added = await addedCollection.find(query).toArray()
+            res.send(added)
         })
         
 
